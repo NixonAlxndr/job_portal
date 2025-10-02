@@ -1,6 +1,7 @@
 import express from "express"
 import morgan from "morgan"
 import userRoutes from "@/routes/user.routes.js"
+import companyRoutes from "@/routes/company.route.js"
 import 'dotenv/config'
 
 const app = express()
@@ -9,7 +10,7 @@ app.use(express.urlencoded())
 app.use(express.json())
 
 app.use("/api/user", userRoutes)
-app.use("/api/company", userRoutes)
+app.use("/api/company", companyRoutes)
 
 app.get("/", (req, res) => {
     res.status(200).json({

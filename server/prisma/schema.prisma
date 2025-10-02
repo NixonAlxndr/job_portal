@@ -21,6 +21,8 @@ model User {
   password String
   name String
   role Role @default(USER)
+
+  company Company?
 }
 
 model Company {
@@ -30,6 +32,8 @@ model Company {
   latitude String
   longitude String
 
+  user User @relation(fields: [userId], references: [id])
+  userId String @unique
   jobs Jobs[]
 }
 
@@ -43,6 +47,7 @@ model Jobs {
   salary String
   responsibilites String
   skills String
+  jobPosted DateTime
 
   company Company @relation(fields: [companyId], references: [id])
   companyId String
