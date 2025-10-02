@@ -19,6 +19,7 @@ model User {
   id String @id @default(uuid())
   email String @unique
   password String
+  name String
   role Role @default(USER)
 }
 
@@ -48,6 +49,11 @@ model Jobs {
 }
 
 model Category {
+  id Int @id @default(autoincrement())
+  name String
+}
+
+model Tag {
   id Int @id @default(autoincrement())
   name String
 }

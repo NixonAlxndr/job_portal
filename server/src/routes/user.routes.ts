@@ -1,11 +1,9 @@
+import { signIn, signUp } from "@/controller/user.controller.js"
 import express from "express"
 
 const router = express.Router()
 
-router.get("/", (req, res) => {
-    res.status(200).send({
-        message: "success"
-    })
-})
+router.post("/signIn", signIn)
+router.post("/signUp", signUp)
 
 export default router
