@@ -2,7 +2,7 @@
   // Visit https://aka.ms/tsconfig to read more about this file
   "compilerOptions": {
     // File Layout
-    "rootDir": "./src",
+    "rootDir": ".",
     "outDir": "./dist",
     // Environment Settings
     // See also https://aka.ms/tsconfig/module
@@ -47,7 +47,7 @@
       ],
     },
   },
-  "include": ["./src/**/*", "./src/**/*.json"], 
+  "include": ["./src/**/*", "./src/**/*.json", "./prisma/**/*"], 
   "ts-node": {
     "require": [
       "tsconfig-paths/register"

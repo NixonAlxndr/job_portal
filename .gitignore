@@ -3,3 +3,4 @@ client/next
 server/node_modules
 server/dist
 server/.env
+server/src/generated/prisma
