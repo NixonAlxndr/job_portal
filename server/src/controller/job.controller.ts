@@ -116,3 +116,83 @@ export const getJob = async (req: Request, res: Response) => {
         }
     }
 }
+
+export const updateJob = async (req: Request, res: Response) => {
+    try {
+        const { jobId } = req.params as { jobId : string }
+        const {
+            jobTitle,
+            jobDescription,
+            jobType,
+            experience,
+            degree,
+            salary,
+            responsibilites,
+            skills,
+            jobTagsId,
+            jobCategoryId
+        } = req.body as CreateJobType
+
+        const job = await prisma.jobs.update({
+            where: { id: jobId },
+            data: {
+                jobTitle,
+                jobDescription,
+                jobType,
+                experience,
+                degree,
+                salary,
+                jobCategoryId,
+                jobTags: {
+                    connect: jobTagsId.map((id: number) => ({ id }))
+                },
+                responsibilites,
+                skills
+            }
+        })
+
+        res.status(200).json({
+            message: "Job updated",
+            job
+        })
+    } catch (err: unknown) {
+        if (err instanceof Error) {
+            res.status(500).json({
+                error: err.message,
+                message: "Internal server error"
+            })
+        } else {
+            res.status(500).json({
+                error: String(err),
+                message: "Internal server error"
+            })
+        }
+    }
+}
+
+export const deleteJob = async (req: Request, res: Response) => {
+    try {
+        const { jobId } = req.params as { jobId: string }
+
+        await prisma.jobs.delete({
+            where: { id: jobId }
+        })
+
+        res.status(200).json({
+            message: "Job Deleted"
+        })
+        
+    } catch (err: unknown) {
+        if (err instanceof Error) {
+            res.status(500).json({
+                error: err.message,
+                message: "Internal server error"
+            })
+        } else {
+            res.status(500).json({
+                error: String(err),
+                message: "Internal server error"
+            })
+        }
+    }
+}
