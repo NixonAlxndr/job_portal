@@ -45,22 +45,32 @@ model Jobs {
   experience Int
   degree String
   salary String
-  responsibilites String
-  skills String
-  jobPosted DateTime
+  responsibilites String[]
+  skills String[]
+  jobPosted DateTime @default(now())
+
+  
+  jobTags Tag[]
 
   company Company @relation(fields: [companyId], references: [id])
   companyId String
+
+  jobCategory Category @relation(fields: [jobCategoryId], references: [id])
+  jobCategoryId Int @unique
 }
 
 model Category {
   id Int @id @default(autoincrement())
   name String
+
+  job Jobs?
 }
 
 model Tag {
   id Int @id @default(autoincrement())
   name String
+
+  job Jobs[]
 }
 
 enum Role {
