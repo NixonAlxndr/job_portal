@@ -56,14 +56,14 @@ model Jobs {
   companyId String
 
   jobCategory Category @relation(fields: [jobCategoryId], references: [id])
-  jobCategoryId Int @unique
+  jobCategoryId Int
 }
 
 model Category {
   id Int @id @default(autoincrement())
   name String
 
-  job Jobs?
+  job Jobs[]
 }
 
 model Tag {

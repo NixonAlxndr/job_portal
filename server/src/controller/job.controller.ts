@@ -1,5 +1,6 @@
 import prisma from "@/prisma.js"
 import type { Request, Response } from "express"
+import { connect } from "http2"
 
 type CreateJobType = {
     companyId: string,
@@ -43,7 +44,7 @@ export const createJob = async (req: Request, res: Response) => {
                 salary,
                 companyId,
                 jobPosted: new Date(),
-                jobCategoryId,
+                jobCategoryId: jobCategoryId,
                 jobTags: {
                     connect: jobTagsId.map((id: number) => ({ id }))
                 },
@@ -74,13 +75,13 @@ export const createJob = async (req: Request, res: Response) => {
 
 export const getJob = async (req: Request, res: Response) => {
     try {
-        const { jobId } = req.params as { jobId : string }
+        const { jobId } = req.params as { jobId: string }
 
         const job = await prisma.jobs.findFirst({
             where: { id: jobId },
             include: {
                 jobCategory: {
-                    select: { name: true}
+                    select: { name: true }
                 },
                 company: {
                     select: {
@@ -117,9 +118,53 @@ export const getJob = async (req: Request, res: Response) => {
     }
 }
 
+export const getJobs = async (req: Request, res: Response) => {
+    try {
+        const { jobTitle, location, category, jobType, experience, datePosted, tags, take, skip } = req.query
+
+        const jobs = await prisma.jobs.findMany({
+            where: {
+                ...(jobTitle && { jobTitle: { contains: jobTitle as string, mode: 'insensitive' } }),
+                ...(location && { company: { place: { contains: location as string, mode: 'insensitive' } } }),
+                ...(category && { jobCategory: { name: { contains: category as string, mode: 'insensitive' } } }),
+                ...(jobType && { jobType: { equals: jobType as string } }),
+                ...(experience && { experience: { lte: Number(experience) } }),
+                ...(datePosted && { jobPosted: { lte: new Date(datePosted as string) } }),
+                ...(tags && { jobTags: { some: { name: { in: (tags as string).split(",") } } } })
+            },
+            take: take ? Number(take) : 5,
+            skip: skip ? Number(skip) : 0,
+            orderBy: {
+                jobPosted: 'desc'
+            },
+            include: {
+                company: true,
+                jobCategory: true,
+                jobTags: true
+            }
+        });
+
+        res.status(200).json({
+            jobs
+        })
+    } catch (err: unknown) {
+        if (err instanceof Error) {
+            res.status(500).json({
+                error: err.message,
+                message: "Internal server error"
+            })
+        } else {
+            res.status(500).json({
+                error: String(err),
+                message: "Internal server error"
+            })
+        }
+    }
+}
+
 export const updateJob = async (req: Request, res: Response) => {
     try {
-        const { jobId } = req.params as { jobId : string }
+        const { jobId } = req.params as { jobId: string }
         const {
             jobTitle,
             jobDescription,
@@ -142,7 +187,7 @@ export const updateJob = async (req: Request, res: Response) => {
                 experience,
                 degree,
                 salary,
-                jobCategoryId,
+                jobCategoryId: jobCategoryId,
                 jobTags: {
                     connect: jobTagsId.map((id: number) => ({ id }))
                 },
@@ -181,7 +226,7 @@ export const deleteJob = async (req: Request, res: Response) => {
         res.status(200).json({
             message: "Job Deleted"
         })
-        
+
     } catch (err: unknown) {
         if (err instanceof Error) {
             res.status(500).json({
